@@ -13,63 +13,60 @@ team_members:
 # ============================================================================
 # Code and reproducibility
 # ============================================================================
-github_repo: "https://github.com/YOUR_USERNAME/YOUR_REPO"
+github_repo: "https://github.com/Mahtab-Madni/IndiaRuns"
 
-
-sandbox_link: "https://huggingface.co/spaces/YOUR_USERNAME/redrob-ranker"
-# Required. A working hosted environment where the ranker can be run on a small
-# candidate sample. See Section 10.5 of submission_spec.md for acceptable
-# platforms (HuggingFace Spaces, Streamlit Cloud, Replit, Colab, Docker, Binder).
+sandbox_link: "https://colab.research.google.com/drive/1SR1SP8Te0rhP8tkUYMVsDhsjtzIllw2C?usp=sharing"
 
 reproduce_command: "python rank.py --candidates ./candidates.jsonl --out ./submission.csv"
-# The single command that produces submission.csv from candidates.jsonl.
-# Should run end-to-end within 5 minutes on CPU with 16GB RAM and no network.
+
 
 # ============================================================================
 # Compute environment
 # ============================================================================
 compute:
-  platform: "MacBook Pro M2"                    # Or: "AWS EC2 c5.4xlarge", "Local Linux box", etc.
-  cpu_cores: 8                                  # Number of CPU cores used
-  ram_gb: 16                                    # Available RAM in GB
-  python_version: "3.11.4"                      # python --version
-  os: "macOS 14.2"                              # Or "Ubuntu 22.04 LTS", etc.
-  uses_gpu_for_inference: false                 # Must be false — see compute constraints
-  has_network_during_ranking: false             # Must be false — no API calls during ranking
-  pre_computation_required: false               # true if you pre-compute embeddings or train models offline
-  pre_computation_time_minutes: 0               # Approximate, if applicable
+  platform: "Lenevo IdeaPad 3"
+  cpu_cores: 8
+  ram_gb: 16
+  python_version: "3.14.5"
+  os: "Windows 11"
+  uses_gpu_for_inference: false
+  has_network_during_ranking: false
+  pre_computation_required: false
+  pre_computation_time_minutes: 0
 
-# ============================================================================
-# AI tools declaration
-# ============================================================================
-# Transparency only — declared use is NOT penalized. Be honest. Stage 5 interview
-# may verify these declarations against your code; declarations that contradict
-# your code or your interview are flagged.
+
 ai_tools_used:
-  - "Claude"        # e.g. for architecture discussion, code review
-  - "GitHub Copilot"  # e.g. for autocomplete
-  # Other options: "ChatGPT", "Cursor", "Gemini", "Codeium", "Other", "None"
+  - "Claude"        
+  - "GitHub Copilot"  
 
 ai_usage_summary: |
-  Briefly describe how AI tools were used. Examples:
-  - "Used Claude for code review and architectural discussion. Used Copilot for autocomplete.
-     No candidate data was fed to any LLM."
-  - "Used ChatGPT to debug Python issues and Cursor for refactoring."
-  - "No AI tools used."
+ "Claude was used for brainstorming, code review, and writing docstrings. GitHub
+  Copilot was used for autocompleting code snippets and generating boilerplate.
+  Both tools were used iteratively throughout development, but all final code
+  was reviewed and edited by me to ensure correctness and originality. "
 
 # ============================================================================
 # Approach summary (optional but recommended)
 # ============================================================================
 methodology_summary: |
-  ≤200 word summary of your approach. Strongly recommended.
+  A multi-signal CPU-only ranking pipeline that treats the JD as an engineering brief, not a keyword list. 
 
-  Example:
-  "Rule-based ranker with explicit reasoning capture. Five scoring components
-  (skills, title+career, experience years, location, education) combined with
-  a multiplicative behavioral-signal modifier. The title component is the
-  decisive signal against keyword-stuffer traps; an endorsement-and-duration
-  trust multiplier on skills catches lazy keyword stuffing. Runtime is ~10
-  seconds for 50K candidates on CPU."
+  **Stage 1** loads and validates candidates from JSONL.
+  **Stage 2** runs automated honeypot detection using consistency checks (experience/company founding date mismatches, expert skills with 0 months use, YOE vs history mismatches). **Stage 3** extracts ~25 named features across four categories: 
+    (a) hard technical requirements from JD (retrieval depth, evaluation depth, LLM integration, Python strength), 
+    (b) experience quality (YOE fit, ML career fraction, product-company vs consulting fraction, production deployment evidence), 
+    (c) behavioral signals (recency of platform activity, open-to-work flag, recruiter response rate, notice period, interview completion rate), and 
+    (d) logistics (location fit, work mode preference, salary expectations). 
+  **Stage 4** applies TF-IDF + BM25 semantic scoring over a JD text blob derived from careful JD reading (not just keyword extraction). 
+  **Stage 5** computes a weighted composite score with multiplicative penalties for hard disqualifiers (red-flag titles, consulting-only careers, honeypots). 
+  **Stage 6** generates grounded, rank-consistent reasoning. Total runtime < 2 minutes on CPU.
+
+  **Key design decisions:**
+  - No GPU, no external API calls — fully reproducible on standard hardware
+  - Honeypot detection via logical consistency, not special-casing
+  - Behavioral signals weighted significantly — an inactive perfect-on-paper candidate is deprioritized
+  - Consulting-only and red-flag-title penalties mirror explicit JD exclusions
+
 
 # ============================================================================
 # Declarations
@@ -78,5 +75,5 @@ declarations:
   read_submission_spec: true        # I have read submission_spec.md in full
   code_is_original_work: true       # My code is my team's original work (using AI as a tool is fine)
   no_collusion: true                # I have not coordinated my submission with other teams
-  honeypot_check_done: false        # OPTIONAL — set true if you explicitly checked for honeypots in your ranking
+  honeypot_check_done: true         # I have checked for honeypots in my ranking
   reproduction_tested: true         # I have tested that my reproduce_command runs end-to-end

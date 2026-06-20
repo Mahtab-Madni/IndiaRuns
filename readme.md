@@ -13,7 +13,7 @@ This repository contains a standalone ranking pipeline for the Redrob hackathon 
 
 - `rank.py` — main ranking script
 - `requirements.txt` — Python dependencies
-- `NoBlackBox.csv` — generated submission output
+- `submission.csv` — generated submission output
 - `submission_metadata.yaml` — submission metadata template
 - `redrob_ranking_system.ipynb` — exploratory notebook used to develop the pipeline
 
@@ -34,7 +34,7 @@ Run the ranking script with the challenge dataset:
 python rank.py \
   --candidates "./candidates.jsonl" \
   --team-id NoBlackBox \
-  --out ./NoBlackBox.csv
+  --out ./submission.csv
 ```
 
 This will generate a CSV with the top 100 ranked candidates and the required columns:
@@ -49,7 +49,7 @@ This will generate a CSV with the top 100 ranked candidates and the required col
 You can validate the output file using the challenge checker:
 
 ```bash
-python "./validate_submission.py" ./NoBlackBox.csv
+python "./validate_submission.py" ./submission.csv
 ```
 
 ## Ranking Approach (High Level)
